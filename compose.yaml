@@ -9,6 +9,28 @@ services:
       - "5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skinemsya -d skinemsya"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  # Приложение в контейнере. Запускается только с профилем:
+  #   docker compose --profile app up --build
+  # При запуске из IDE Spring Boot сам поднимает только postgres.
+  app:
+    build: .
+    profiles: [app]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/skinemsya
+      SPRING_DATASOURCE_USERNAME: skinemsya
+      SPRING_DATASOURCE_PASSWORD: skinemsya
+      JWT_SECRET: ${JWT_SECRET:-c2tpbmVtc3lhLWxvY2FsLWRldmVsb3BtZW50LXNlY3JldC1rZXktY2hhbmdlLW1l}
+    ports:
+      - "8080:8080"
 
 volumes:
   postgres-data:
