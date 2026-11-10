@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: skinemsya
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+
+app:
+  jwt:
+    # Секрет для подписи токенов (Base64, минимум 32 байта).
+    # Значение по умолчанию подходит только для локальной разработки:
+    # в продакшене задайте переменную окружения JWT_SECRET.
+    secret: ${JWT_SECRET:c2tpbmVtc3lhLWxvY2FsLWRldmVsb3BtZW50LXNlY3JldC1rZXktY2hhbmdlLW1l}
+    ttl: 24h
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
