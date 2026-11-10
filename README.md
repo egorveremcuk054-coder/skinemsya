@@ -1,11 +1,14 @@
 # Скинемся 💸
 
-REST API для дележа общих расходов: поездки, съёмная квартира, общие покупки.
+Сервис для дележа общих расходов: поездки, съёмная квартира, общие покупки.
 Участники записывают, кто за что платил, а сервис считает, кто кому должен,
 и предлагает **минимальное число переводов**, чтобы рассчитаться.
 
+Бэкенд — REST API на Spring Boot, к нему есть простой веб-интерфейс.
+
 ## Возможности
 
+- Веб-интерфейс: группы, траты, балансы и кнопка «Перевёл» на одной странице
 - Регистрация и вход по JWT
 - Группы с участниками: зарегистрированными пользователями и «гостями» (только имя)
 - Траты с тремя способами деления: **поровну**, **точными суммами**, **по долям** (2:1:1)
@@ -70,6 +73,7 @@ REST API для дележа общих расходов: поездки, съё
 - **Spring Boot 4**: Web MVC, Data JPA, Validation, Security (OAuth2 Resource Server + JWT), Actuator
 - **PostgreSQL 17** + **Flyway**
 - **springdoc-openapi**: Swagger UI
+- **HTML, CSS и JavaScript без фреймворков** для веб-интерфейса
 - **JUnit 5**, **AssertJ**, **MockMvc**, **Testcontainers**
 - **Docker**, **Docker Compose**, **GitHub Actions**
 
@@ -90,6 +94,8 @@ ru.skinemsya
 ```
 
 Схема БД — в [миграции Flyway](src/main/resources/db/migration/V1__init.sql).
+Веб-интерфейс лежит в [`src/main/resources/static`](src/main/resources/static) и работает
+через тот же REST API, что и любой другой клиент.
 
 ## API
 
@@ -152,8 +158,8 @@ ru.skinemsya
 
 1. Запустите Docker Desktop.
 2. Запустите `SkinemsyaApplication`. Spring Boot сам поднимет PostgreSQL из `compose.yaml`.
-3. Откройте http://localhost:8080/swagger-ui.html, зарегистрируйтесь через `/api/auth/register`,
-   получите токен в `/api/auth/login` и вставьте его в «Authorize».
+3. Откройте http://localhost:8080 — это веб-интерфейс. Документация API —
+   http://localhost:8080/swagger-ui.html (токен из `/api/auth/login` вставляется в «Authorize»).
 
 ### Всё в Docker
 
@@ -189,4 +195,3 @@ docker compose --profile app up --build
 - [ ] Приглашение в группу по ссылке
 - [ ] Редактирование трат и история изменений
 - [ ] Telegram-бот как второй интерфейс
-- [ ] Веб-интерфейс

@@ -1,0 +1,598 @@
+:root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #17202a;
+    --muted: #66727f;
+    --border: #e2e7ec;
+    --input: #ffffff;
+    --accent: #0e9f6e;
+    --accent-hover: #0b8a5f;
+    --accent-soft: #e3f6ee;
+    --on-accent: #ffffff;
+    --pos: #128a4f;
+    --neg: #d23f3f;
+    --pos-soft: #e3f4ea;
+    --neg-soft: #fbe7e7;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 16px rgba(16, 24, 40, .05);
+    --radius: 14px;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0f1317;
+        --card: #181e24;
+        --text: #e8edf1;
+        --muted: #93a0ad;
+        --border: #2a333c;
+        --input: #12171c;
+        --accent: #22c38e;
+        --accent-hover: #3bd3a0;
+        --accent-soft: #143329;
+        --on-accent: #06281c;
+        --pos: #3fd38d;
+        --neg: #ff7474;
+        --pos-soft: #143322;
+        --neg-soft: #3a1c1c;
+        --shadow: none;
+        color-scheme: dark;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+h1, h2, h3 {
+    margin: 0;
+    font-weight: 650;
+}
+
+button, input, select {
+    font: inherit;
+    color: inherit;
+}
+
+.splash {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    color: var(--muted);
+}
+
+/* ---------- Кнопки и поля ---------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    border-color: var(--muted);
+}
+
+.btn:disabled {
+    opacity: .6;
+    cursor: default;
+}
+
+.btn-primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+}
+
+.btn-small {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.btn-danger:hover {
+    border-color: var(--neg);
+    color: var(--neg);
+}
+
+.icon-btn {
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.icon-btn:hover {
+    background: var(--neg-soft);
+    color: var(--neg);
+}
+
+.input {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--input);
+    outline: none;
+}
+
+.input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.input-small {
+    width: 110px;
+    height: 32px;
+    text-align: right;
+}
+
+.field {
+    display: grid;
+    gap: 4px;
+}
+
+.field > span {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.field-error {
+    font-size: 13px;
+    color: var(--neg);
+}
+
+.form {
+    display: grid;
+    gap: 12px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.inline-form {
+    display: flex;
+    gap: 8px;
+}
+
+.inline-form .input {
+    min-width: 0;
+}
+
+/* ---------- Вход ---------- */
+
+.auth {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: 16px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-logo {
+    margin-bottom: 4px;
+    font-size: 28px;
+    text-align: center;
+}
+
+.auth-subtitle {
+    margin: 0 0 20px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--bg);
+}
+
+.tab {
+    height: 34px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.tab.active {
+    background: var(--card);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+
+/* ---------- Каркас ---------- */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.card {
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.card + .card {
+    margin-top: 16px;
+}
+
+.card-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 16px;
+}
+
+.card-title small {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.empty {
+    padding: 8px 0;
+    color: var(--muted);
+}
+
+/* ---------- Список групп ---------- */
+
+.group-list {
+    display: grid;
+    gap: 4px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.group-item {
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.group-item:hover {
+    background: var(--bg);
+}
+
+.group-item.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ---------- Группа ---------- */
+
+.group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.group-header h1 {
+    font-size: 24px;
+}
+
+.group-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.list > li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+}
+
+.list > li:first-child {
+    border-top: 0;
+}
+
+.grow {
+    flex: 1;
+    min-width: 0;
+}
+
+.item-title {
+    font-weight: 550;
+}
+
+.item-sub {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.amount {
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.pos {
+    color: var(--pos);
+}
+
+.neg {
+    color: var(--neg);
+}
+
+.badge {
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-accent {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* Балансы с полосками */
+.balance-row {
+    display: grid;
+    gap: 6px;
+    padding: 8px 0;
+}
+
+.balance-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.bar {
+    position: relative;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.bar > i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 999px;
+}
+
+.bar > i.pos {
+    left: 50%;
+    background: var(--pos);
+}
+
+.bar > i.neg {
+    right: 50%;
+    background: var(--neg);
+}
+
+/* Как рассчитаться */
+.transfer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+}
+
+.transfer + .transfer {
+    margin-top: 8px;
+}
+
+.transfer-names {
+    flex: 1;
+    min-width: 0;
+}
+
+.all-settled {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--pos-soft);
+    color: var(--pos);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Способ деления */
+.segmented {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--bg);
+}
+
+.segmented button {
+    height: 32px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.segmented button.active {
+    background: var(--card);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+
+.split-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+}
+
+.split-row label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.split-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+.split-hint {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.split-hint.warn {
+    color: var(--neg);
+}
+
+/* ---------- Уведомления ---------- */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 10;
+    max-width: calc(100% - 32px);
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: var(--text);
+    color: var(--card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 12px);
+    transition: opacity .2s, transform .2s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.toast.error {
+    background: var(--neg);
+    color: #fff;
+}
+
+/* ---------- Телефоны ---------- */
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .group-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar {
+        padding: 12px 16px;
+    }
+}
