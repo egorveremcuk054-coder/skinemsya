@@ -7,9 +7,10 @@ import java.time.Duration;
 /**
  * Настройки JWT из {@code application.yaml}.
  *
- * @param secret секрет для подписи токенов в Base64, минимум 32 байта
- * @param ttl    время жизни токена
+ * @param secret   секрет для подписи токенов в Base64, минимум 32 байта
+ * @param ttl      время жизни токена обычного пользователя
+ * @param guestTtl время жизни токена гостя: у гостя нет пароля, поэтому токен живёт долго
  */
 @ConfigurationProperties(prefix = "app.jwt")
-public record JwtProperties(String secret, Duration ttl) {
+public record JwtProperties(String secret, Duration ttl, Duration guestTtl) {
 }

@@ -28,4 +28,11 @@ public class AuthController {
     public TokenResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
+
+    /** Вход без регистрации: создаёт гостя и возвращает его токен. */
+    @PostMapping("/guest")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TokenResponse guest(@Valid @RequestBody(required = false) GuestRequest request) {
+        return authService.guest(request);
+    }
 }

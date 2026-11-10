@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 import ru.skinemsya.user.TokenResponse;
 import ru.skinemsya.user.User;
 
+import java.time.Duration;
 import java.time.Instant;
 
 /**
- * Выпускает JWT-токены для вошедших пользователей.
+ * Выпускает JWT-токены для вошедших пользователей и гостей.
  */
 @Service
 public class TokenService {
@@ -28,17 +29,22 @@ public class TokenService {
     }
 
     public TokenResponse issue(User user) {
+        Duration ttl = user.isGuest() ? properties.guestTtl() : properties.ttl();
         Instant now = Instant.now();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+
+        JwtClaimsSet.Builder claims = JwtClaimsSet.builder()
                 .issuer(ISSUER)
                 .subject(user.getId().toString())
                 .issuedAt(now)
-                .expiresAt(now.plus(properties.ttl()))
-                .claim("email", user.getEmail())
+                .expiresAt(now.plus(ttl))
                 .claim("name", user.getDisplayName())
-                .build();
+                .claim("guest", user.isGuest());
+        if (user.getEmail() != null) {
+            claims.claim("email", user.getEmail());
+        }
+
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
-        String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
-        return new TokenResponse(token, "Bearer", properties.ttl().toSeconds());
+        String token = encoder.encode(JwtEncoderParameters.from(header, claims.build())).getTokenValue();
+        return new TokenResponse(token, "Bearer", ttl.toSeconds());
     }
 }

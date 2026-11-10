@@ -12,6 +12,8 @@ import java.util.Locale;
 @Transactional
 public class AuthService {
 
+    private static final String DEFAULT_GUEST_NAME = "Я";
+
     private final UserRepository users;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
@@ -39,6 +41,15 @@ public class AuthService {
         User user = users.findByEmail(normalizeEmail(request.email()))
                 .filter(found -> passwordEncoder.matches(request.password(), found.getPasswordHash()))
                 .orElseThrow(() -> ApiException.unauthorized("Неверный email или пароль"));
+        return tokenService.issue(user);
+    }
+
+    /** Создаёт гостя без регистрации и сразу выдаёт ему токен. */
+    public TokenResponse guest(GuestRequest request) {
+        String name = request == null || request.displayName() == null || request.displayName().isBlank()
+                ? DEFAULT_GUEST_NAME
+                : request.displayName().trim();
+        User user = users.save(User.guest(name));
         return tokenService.issue(user);
     }
 

@@ -163,11 +163,6 @@ button, input, select {
     color: var(--muted);
 }
 
-.field-error {
-    font-size: 13px;
-    color: var(--neg);
-}
-
 .form {
     display: grid;
     gap: 12px;
@@ -188,58 +183,6 @@ button, input, select {
     min-width: 0;
 }
 
-/* ---------- Вход ---------- */
-
-.auth {
-    display: grid;
-    place-items: center;
-    min-height: 100vh;
-    padding: 16px;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 400px;
-}
-
-.auth-logo {
-    margin-bottom: 4px;
-    font-size: 28px;
-    text-align: center;
-}
-
-.auth-subtitle {
-    margin: 0 0 20px;
-    color: var(--muted);
-    text-align: center;
-}
-
-.tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    margin-bottom: 16px;
-    padding: 4px;
-    border-radius: 12px;
-    background: var(--bg);
-}
-
-.tab {
-    height: 34px;
-    border: 0;
-    border-radius: 9px;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-}
-
-.tab.active {
-    background: var(--card);
-    color: var(--text);
-    font-weight: 600;
-    box-shadow: var(--shadow);
-}
-
 /* ---------- Каркас ---------- */
 
 .topbar {
@@ -258,13 +201,6 @@ button, input, select {
 .logo {
     font-size: 20px;
     font-weight: 700;
-}
-
-.topbar-user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--muted);
 }
 
 .layout {
@@ -594,5 +530,9 @@ button, input, select {
 
     .topbar {
         padding: 12px 16px;
+    }
+
+    .tagline {
+        display: none;
     }
 }

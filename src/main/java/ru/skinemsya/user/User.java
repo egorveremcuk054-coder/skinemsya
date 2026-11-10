@@ -34,6 +34,15 @@ public class User {
         this.createdAt = Instant.now();
     }
 
+    /** Гость без email и пароля: входит по токену, который хранится в браузере. */
+    public static User guest(String displayName) {
+        return new User(null, null, displayName);
+    }
+
+    public boolean isGuest() {
+        return email == null;
+    }
+
     public Long getId() {
         return id;
     }

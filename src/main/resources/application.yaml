@@ -15,6 +15,7 @@ app:
     # в продакшене задайте переменную окружения JWT_SECRET.
     secret: ${JWT_SECRET:c2tpbmVtc3lhLWxvY2FsLWRldmVsb3BtZW50LXNlY3JldC1rZXktY2hhbmdlLW1l}
     ttl: 24h
+    guest-ttl: 365d
 
 management:
   endpoints:

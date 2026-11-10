@@ -37,7 +37,6 @@ const state = {
     groups: [],
     groupId: null,
     data: null,
-    authMode: 'login',
 };
 
 // ---------- API ----------
@@ -71,8 +70,8 @@ async function api(method, path, body) {
     }
 
     if (response.status === 401 && state.token) {
-        logout();
-        throw new ApiError(401, {detail: 'Сессия истекла, войдите снова'});
+        forgetToken();
+        throw new ApiError(401, {detail: 'Сессия устарела, начинаем заново'});
     }
     if (response.status === 204) {
         return null;
@@ -173,6 +172,9 @@ async function run(button, action) {
         await action();
     } catch (error) {
         toast(messageOf(error), 'error');
+        if (error.status === 401) {
+            start();
+        }
     } finally {
         if (button) {
             button.disabled = false;
@@ -181,6 +183,30 @@ async function run(button, action) {
 }
 
 // ---------- Данные ----------
+
+/**
+ * Регистрация не нужна: при первом заходе создаём гостя и запоминаем его токен в браузере.
+ * Если токен устарел или база очищена — тихо начинаем с новым гостем.
+ */
+async function ensureSession() {
+    if (state.token) {
+        try {
+            await loadSession();
+            return;
+        } catch {
+            forgetToken();
+        }
+    }
+    const token = await api('POST', '/api/auth/guest', {displayName: 'Я'});
+    state.token = token.accessToken;
+    storage.set(TOKEN_KEY, state.token);
+    await loadSession();
+}
+
+function forgetToken() {
+    state.token = null;
+    storage.set(TOKEN_KEY, null);
+}
 
 async function loadSession() {
     state.me = await api('GET', '/api/users/me');
@@ -217,90 +243,18 @@ async function refresh() {
     render();
 }
 
-function logout() {
-    state.token = null;
-    state.me = null;
-    state.groups = [];
-    state.groupId = null;
-    state.data = null;
-    storage.set(TOKEN_KEY, null);
-    render();
-}
-
 // ---------- Отрисовка ----------
 
 function render() {
     const root = document.getElementById('app');
-    root.replaceChildren(state.token && state.me ? renderApp() : renderAuth());
-}
-
-function renderAuth() {
-    const isLogin = state.authMode === 'login';
-    const errors = h('div', {class: 'field-error'});
-
-    const nameInput = h('input', {class: 'input', name: 'displayName', placeholder: 'Аня', autocomplete: 'nickname'});
-    const emailInput = h('input', {
-        class: 'input', name: 'email', type: 'email', placeholder: 'anya@example.com', autocomplete: 'email', required: true,
-    });
-    const passwordInput = h('input', {
-        class: 'input', name: 'password', type: 'password', placeholder: 'Минимум 8 символов',
-        autocomplete: isLogin ? 'current-password' : 'new-password', required: true,
-    });
-    const submit = h('button', {class: 'btn btn-primary', type: 'submit'}, isLogin ? 'Войти' : 'Зарегистрироваться');
-
-    const form = h('form', {
-        class: 'form',
-        onsubmit: event => {
-            event.preventDefault();
-            errors.textContent = '';
-            run(submit, async () => {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                try {
-                    if (!isLogin) {
-                        await api('POST', '/api/auth/register', {email, password, displayName: nameInput.value.trim()});
-                    }
-                    const token = await api('POST', '/api/auth/login', {email, password});
-                    state.token = token.accessToken;
-                    storage.set(TOKEN_KEY, state.token);
-                    await loadSession();
-                    render();
-                } catch (error) {
-                    errors.textContent = messageOf(error);
-                }
-            });
-        },
-    },
-    !isLogin && h('label', {class: 'field'}, h('span', null, 'Как вас зовут'), nameInput),
-    h('label', {class: 'field'}, h('span', null, 'Email'), emailInput),
-    h('label', {class: 'field'}, h('span', null, 'Пароль'), passwordInput),
-    errors,
-    submit);
-
-    const tab = (mode, title) => h('button', {
-        class: `tab ${state.authMode === mode ? 'active' : ''}`,
-        type: 'button',
-        onclick: () => {
-            state.authMode = mode;
-            render();
-        },
-    }, title);
-
-    return h('main', {class: 'auth'},
-        h('div', {class: 'card auth-card'},
-            h('div', {class: 'auth-logo'}, '💸 Скинемся'),
-            h('p', {class: 'auth-subtitle'}, 'Делите общие расходы без споров и таблиц'),
-            h('div', {class: 'tabs'}, tab('login', 'Вход'), tab('register', 'Регистрация')),
-            form));
+    root.replaceChildren(state.me ? renderApp() : h('div', {class: 'splash'}, 'Загрузка…'));
 }
 
 function renderApp() {
     return h('div', null,
         h('header', {class: 'topbar'},
             h('div', {class: 'logo'}, '💸 Скинемся'),
-            h('div', {class: 'topbar-user'},
-                h('span', null, state.me.displayName),
-                h('button', {class: 'btn btn-small', onclick: logout}, 'Выйти'))),
+            h('div', {class: 'muted tagline'}, 'Делите общие расходы без споров и таблиц')),
         h('div', {class: 'layout'},
             renderSidebar(),
             h('main', null, state.data ? renderGroup(state.data) : renderNoGroups())));
@@ -583,8 +537,7 @@ function renderBalances({balances}) {
 }
 
 function renderMembers({group}) {
-    const name = h('input', {class: 'input', placeholder: 'Имя', maxlength: 100});
-    const email = h('input', {class: 'input', type: 'email', placeholder: 'или email'});
+    const name = h('input', {class: 'input', placeholder: 'Имя друга', maxlength: 100, required: true});
     const submit = h('button', {class: 'btn btn-primary', type: 'submit', title: 'Добавить участника'}, '+');
 
     return h('section', {class: 'card'},
@@ -592,26 +545,19 @@ function renderMembers({group}) {
         h('ul', {class: 'list'}, group.members.map(member => h('li', null,
             h('span', {class: 'grow'},
                 member.name,
-                member.userId === state.me.id
-                    ? h('span', {class: 'badge badge-accent'}, 'вы')
-                    : member.userId != null && h('span', {class: 'badge'}, 'аккаунт'))))),
+                member.userId === state.me.id && h('span', {class: 'badge badge-accent'}, 'вы'))))),
         h('form', {
             class: 'inline-form',
             style: 'margin-top: 12px',
             onsubmit: event => {
                 event.preventDefault();
                 run(submit, async () => {
-                    await api('POST', `/api/groups/${group.id}/members`, {
-                        name: name.value.trim() || null,
-                        email: email.value.trim() || null,
-                    });
+                    await api('POST', `/api/groups/${group.id}/members`, {name: name.value.trim()});
                     await refresh();
                     toast('Участник добавлен');
                 });
             },
-        }, name, email, submit),
-        h('p', {class: 'item-sub', style: 'margin: 8px 0 0'},
-            'Email — если у друга есть аккаунт: тогда он тоже увидит группу.'));
+        }, name, submit));
 }
 
 function renderSettlements({group, settlements}) {
@@ -643,14 +589,16 @@ function renderSettlements({group, settlements}) {
 
 // ---------- Старт ----------
 
-(async function start() {
-    if (state.token) {
-        try {
-            await loadSession();
-        } catch {
-            logout();
-            return;
-        }
+async function start() {
+    state.me = null;
+    render();
+    try {
+        await ensureSession();
+    } catch (error) {
+        document.getElementById('app').replaceChildren(h('div', {class: 'splash'}, messageOf(error)));
+        return;
     }
     render();
-})();
+}
+
+start();
