@@ -1,5 +1,9 @@
 # Скинемся 💸
 
+[![CI](https://github.com/egorveremcuk054-coder/skinemsya/actions/workflows/ci.yml/badge.svg)](https://github.com/egorveremcuk054-coder/skinemsya/actions/workflows/ci.yml)
+![Java 21](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4-6db33f)
+
 Сервис для дележа общих расходов: поездки, съёмная квартира, общие покупки.
 Участники записывают, кто за что платил, а сервис считает, кто кому должен,
 и предлагает **минимальное число переводов**, чтобы рассчитаться.
